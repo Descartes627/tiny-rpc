@@ -10,12 +10,14 @@
         <module>tiny-rpc-common</module>
         <module>tiny-rpc-server</module>
         <module>tiny-rpc-client</module>
+        <module>tiny-rpc-sample-server</module>
     </modules>
     <packaging>pom</packaging>
 
     <properties>
         <dragonfly-tiny-rpc-common.version>1.0-SNAPSHOT</dragonfly-tiny-rpc-common.version>
         <dragonfly-tiny-rpc-registry.version>1.0-SNAPSHOT</dragonfly-tiny-rpc-registry.version>
+        <dragonfly-tiny-rpc-server.version>1.0-SNAPSHOT</dragonfly-tiny-rpc-server.version>
         <spring-boot.version>2.0.2.RELEASE</spring-boot.version>
         <junit.version>4.12</junit.version>
         <netty.version>4.1.12.Final</netty.version>
@@ -25,6 +27,8 @@
         <commons.version>4.4</commons.version>
         <objenesis.version>2.6</objenesis.version>
         <cglib.version>3.3.0</cglib.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -108,6 +112,11 @@
                 <groupId>com.dragonfly.tiny.rpc</groupId>
                 <artifactId>tiny-rpc-registry</artifactId>
                 <version>${dragonfly-tiny-rpc-registry.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dragonfly.tiny.rpc</groupId>
+                <artifactId>tiny-rpc-server</artifactId>
+                <version>${dragonfly-tiny-rpc-server.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
