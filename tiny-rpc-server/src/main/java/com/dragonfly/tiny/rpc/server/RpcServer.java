@@ -91,7 +91,7 @@ public class RpcServer implements ApplicationContextAware, InitializingBean {
                             ChannelPipeline pipeline = ch.pipeline();
                             pipeline.addLast(new RpcDecoder(RpcRequest.class));
                             pipeline.addLast(new RpcEncoder(RpcResponse.class));
-                            pipeline.addLast(executorGroup, new RpcServiceHandler(handlerMap));
+                            pipeline.addLast(new RpcServiceHandler(handlerMap));
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 1024)

@@ -10,6 +10,7 @@ import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -38,19 +39,30 @@ public class RpcServiceHandler extends SimpleChannelInboundHandler<RpcRequest> {
      */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, RpcRequest request) throws Exception {
-        ctx.executor().submit(() -> {
-            RpcResponse response = new RpcResponse();
-            response.setRequestId(request.getRequestId());
-            try {
-                Object result = handle(request);
-                response.setResult(result);
-            }
-            catch (Exception e) {
-                log.error("handle result failure", e);
-                response.setException(e);
-            }
-            ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.info("Send response for request " + request.getRequestId()));
-        });
+//        ctx.executor().submit(() -> {
+//            RpcResponse response = new RpcResponse();
+//            response.setRequestId(request.getRequestId());
+//            try {
+//                Object result = handle(request);
+//                response.setResult(result);
+//            }
+//            catch (Exception e) {
+//                log.error("handle result failure", e);
+//                response.setException(e);
+//            }
+//            ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.info("Send response for request " + request.getRequestId()));
+//        });
+        RpcResponse response = new RpcResponse();
+        response.setRequestId(request.getRequestId());
+        try {
+            Object result = handle(request);
+            response.setResult(result);
+        }
+        catch (Exception e) {
+            log.error("handle result failure", e);
+            response.setException(e);
+        }
+        ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.info("Send response for request " + request.getRequestId()));
     }
 
     private Object handle(RpcRequest request) throws Exception {
@@ -68,10 +80,14 @@ public class RpcServiceHandler extends SimpleChannelInboundHandler<RpcRequest> {
         String methodName = request.getMethodName();
         Class<?>[] parameterTypes = request.getParameterTypes();
         Object[] parameters = request.getParameters();
+        // 执行反射调用
+        Method method = serviceClass.getMethod(methodName, parameterTypes);
+        method.setAccessible(true);
+        return method.invoke(serviceBean, parameters);
         //cglib反射
-        FastClass serviceFastClass = FastClass.create(serviceClass);
-        FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
-        return serviceFastMethod.invoke(serviceBean, parameters);
+//        FastClass serviceFastClass = FastClass.create(serviceClass);
+//        FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
+//        return serviceFastMethod.invoke(serviceBean, parameters);
     }
 
     @Override

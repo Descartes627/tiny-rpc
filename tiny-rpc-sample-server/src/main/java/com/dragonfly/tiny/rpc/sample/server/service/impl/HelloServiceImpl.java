@@ -1,7 +1,8 @@
 package com.dragonfly.tiny.rpc.sample.server.service.impl;
 
-import com.dragonfly.tiny.rpc.sample.server.dto.Person;
-import com.dragonfly.tiny.rpc.sample.server.service.HelloService;
+
+import com.dragonfly.tiny.rpc.sample.api.HelloService;
+import com.dragonfly.tiny.rpc.sample.api.dto.Person;
 import com.dragonfly.tiny.rpc.server.annotaiton.RpcService;
 
 /**

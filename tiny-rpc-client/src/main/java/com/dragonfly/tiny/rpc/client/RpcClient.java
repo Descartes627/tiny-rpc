@@ -58,7 +58,7 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
                     })
                     .option(ChannelOption.TCP_NODELAY, true);
             // 绑定套接字
-            ChannelFuture future = bootstrap.bind(host, port).sync();
+            ChannelFuture future = bootstrap.connect(host, port).sync();
             // 写入 RPC 请求数据并关闭连接
             Channel channel = future.channel();
             channel.writeAndFlush(request).sync().addListener((ChannelFutureListener) channelFuture -> log.debug("Send request for response" + request.getRequestId()));

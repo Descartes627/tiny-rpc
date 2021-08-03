@@ -11,6 +11,8 @@
         <module>tiny-rpc-server</module>
         <module>tiny-rpc-client</module>
         <module>tiny-rpc-sample-server</module>
+        <module>tiny-rpc-sample-client</module>
+        <module>tiny-rpc-sample-api</module>
     </modules>
     <packaging>pom</packaging>
 

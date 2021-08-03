@@ -1,6 +1,6 @@
-package com.dragonfly.tiny.rpc.sample.server.service;
+package com.dragonfly.tiny.rpc.sample.api;
 
-import com.dragonfly.tiny.rpc.sample.server.dto.Person;
+import com.dragonfly.tiny.rpc.sample.api.dto.Person;
 
 /**
  * @author: donganguo

@@ -1,4 +1,4 @@
-package com.dragonfly.tiny.rpc.sample.server.dto;
+package com.dragonfly.tiny.rpc.sample.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
