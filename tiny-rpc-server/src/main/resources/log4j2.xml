@@ -26,12 +26,12 @@
     <loggers>
 
         <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
-        <logger name="com.dragonfly.tiny.rpc.server" level="debug" additivity="false">
+        <logger name="com.dragonfly.tiny.rpc.server" level="info" additivity="false">
             <AppenderRef ref="Console"/>
         </logger>
 
 
-        <root level="debug">
+        <root level="info">
             <appender-ref ref="Console"/>
         </root>
     </loggers>

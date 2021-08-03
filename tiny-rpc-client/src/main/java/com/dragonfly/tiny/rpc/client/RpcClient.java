@@ -53,7 +53,7 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
                             ChannelPipeline pipeline = ch.pipeline();
                             pipeline.addLast(new RpcDecoder(RpcResponse.class));    //in
                             pipeline.addLast(new RpcEncoder(RpcRequest.class));     //out
-                            pipeline.addLast(this);                                 //in
+                            pipeline.addLast(RpcClient.this);                                 //in
                         }
                     })
                     .option(ChannelOption.TCP_NODELAY, true);
@@ -61,7 +61,7 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
             ChannelFuture future = bootstrap.connect(host, port).sync();
             // 写入 RPC 请求数据并关闭连接
             Channel channel = future.channel();
-            channel.writeAndFlush(request).sync().addListener((ChannelFutureListener) channelFuture -> log.debug("Send request for response" + request.getRequestId()));
+            channel.writeAndFlush(request).sync().addListener((ChannelFutureListener) channelFuture -> log.info("Send request for response" + request.getRequestId()));
             channel.closeFuture().sync();
             return response;
         } finally {
