@@ -23,28 +23,28 @@ public class ZooKeeperServiceRegistry implements ServiceRegistry {
     private final ZkClient zkClient;
 
     public ZooKeeperServiceRegistry(String zkAddress) {
-        log.debug("connecting zookeeper");
+        log.info("connecting zookeeper");
         zkClient = new ZkClient(zkAddress, zkConstant.ZK_SESSION_TIMEOUT, zkConstant.ZK_CONNECTION_TIMEOUT);
-        log.debug("connected");
+        log.info("connected");
     }
 
     public void register(String serviceName, String serviceAddress) {
         // 创建 registry 节点（持久）
         if (!zkClient.exists(zkConstant.ZK_REGISTRY_PATH)) {
             zkClient.createPersistent(zkConstant.ZK_REGISTRY_PATH);
-            log.debug("create registry node: {}", zkConstant.ZK_REGISTRY_PATH);
+            log.info("create registry node: {}", zkConstant.ZK_REGISTRY_PATH);
         }
         // 创建 service 节点（持久）
         String servicePath = zkConstant.ZK_REGISTRY_PATH + File.separator + serviceName;
         if (!zkClient.exists(servicePath)) {
             zkClient.createPersistent(servicePath);
-            log.debug("create service node: {}", servicePath);
+            log.info("create service node: {}", servicePath);
         }
         // 创建 address 节点（临时）
         String addressPath = servicePath + File.separator + serviceAddress;
         if (!zkClient.exists(addressPath)) {
             String addressNode = zkClient.createEphemeralSequential(addressPath, serviceAddress);
-            log.debug("create address node: {}", addressNode);
+            log.info("create address node: {}", addressNode);
         }
     }
 

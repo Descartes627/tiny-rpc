@@ -26,7 +26,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
 
     public String discover(String serviceName) {
         ZkClient zkClient = new ZkClient(zkAddress, zkConstant.ZK_SESSION_TIMEOUT, zkConstant.ZK_CONNECTION_TIMEOUT);
-        log.debug("connect zookeeper");
+        log.info("connect zookeeper");
         try {
             String servicePath = zkConstant.ZK_REGISTRY_PATH + File.separator + serviceName;
             if (!zkClient.exists(servicePath)) {
@@ -44,7 +44,7 @@ public class ZookeeperServiceDiscovery implements ServiceDiscovery {
             }
             else {
                 address = addressList.get(ThreadLocalRandom.current().nextInt(size));
-                log.debug("get random address node: {}", address);
+                log.info("get random address node: {}", address);
             }
             String addressPath = servicePath + File.separator + address;
             return zkClient.readData(addressPath);

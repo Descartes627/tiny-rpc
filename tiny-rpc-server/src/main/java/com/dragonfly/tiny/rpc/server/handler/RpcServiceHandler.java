@@ -62,7 +62,7 @@ public class RpcServiceHandler extends SimpleChannelInboundHandler<RpcRequest> {
             log.error("handle result failure", e);
             response.setException(e);
         }
-        ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.info("Send response for request " + request.getRequestId()));
+        ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.debug("create response for request " + request.getRequestId()));
     }
 
     private Object handle(RpcRequest request) throws Exception {
@@ -81,13 +81,13 @@ public class RpcServiceHandler extends SimpleChannelInboundHandler<RpcRequest> {
         Class<?>[] parameterTypes = request.getParameterTypes();
         Object[] parameters = request.getParameters();
         // 执行反射调用
-        Method method = serviceClass.getMethod(methodName, parameterTypes);
-        method.setAccessible(true);
-        return method.invoke(serviceBean, parameters);
+//        Method method = serviceClass.getMethod(methodName, parameterTypes);
+//        method.setAccessible(true);
+//        return method.invoke(serviceBean, parameters);
         //cglib反射
-//        FastClass serviceFastClass = FastClass.create(serviceClass);
-//        FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
-//        return serviceFastMethod.invoke(serviceBean, parameters);
+        FastClass serviceFastClass = FastClass.create(serviceClass);
+        FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
+        return serviceFastMethod.invoke(serviceBean, parameters);
     }
 
     @Override

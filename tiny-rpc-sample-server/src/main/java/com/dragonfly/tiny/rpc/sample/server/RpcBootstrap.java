@@ -11,7 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 @Slf4j
 public class RpcBootstrap {
     public static void main(String[] args) {
-        log.debug("start server");
+        log.info("start server");
         new ClassPathXmlApplicationContext("spring.xml");
     }
 }

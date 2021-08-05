@@ -30,9 +30,15 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
         this.port = port;
     }
 
+    public RpcResponse getResponse() {
+        return response;
+    }
+
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, RpcResponse response) throws Exception {
+    public void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
+        log.debug("RpcClient读到response " + response);
         this.response = response;
+        response.notifyAll();
     }
 
     @Override
@@ -42,27 +48,34 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
     }
 
     public RpcResponse send(RpcRequest request) throws Exception {
-        NioEventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new NioEventLoopGroup();
         try {
+            // 创建并初始化 Netty 客户端 Bootstrap 对象
             Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(group)
-                    .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ChannelPipeline pipeline = ch.pipeline();
-                            pipeline.addLast(new RpcDecoder(RpcResponse.class));    //in
-                            pipeline.addLast(new RpcEncoder(RpcRequest.class));     //out
-                            pipeline.addLast(RpcClient.this);                                 //in
-                        }
-                    })
-                    .option(ChannelOption.TCP_NODELAY, true);
-            // 绑定套接字
+            bootstrap.group(group);
+            bootstrap.channel(NioSocketChannel.class);
+            bootstrap.handler(new ChannelInitializer<SocketChannel>() {
+                @Override
+                public void initChannel(SocketChannel channel) throws Exception {
+                    ChannelPipeline pipeline = channel.pipeline();
+                    pipeline.addLast(new RpcEncoder(RpcRequest.class)); // 编码 RPC 请求 out
+                    pipeline.addLast(new RpcDecoder(RpcResponse.class)); // 解码 RPC 响应 in
+                    pipeline.addLast(RpcClient.this); // 处理 RPC 响应  in
+                }
+            });
+            bootstrap.option(ChannelOption.TCP_NODELAY, true);
+            // 连接 RPC 服务器
             ChannelFuture future = bootstrap.connect(host, port).sync();
             // 写入 RPC 请求数据并关闭连接
             Channel channel = future.channel();
-            channel.writeAndFlush(request).sync().addListener((ChannelFutureListener) channelFuture -> log.info("Send request for response" + request.getRequestId()));
+            channel.writeAndFlush(request).sync().addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    log.debug("write request");
+                }
+            });
             channel.closeFuture().sync();
+            // 返回 RPC 响应对象
             return response;
         } finally {
             group.shutdownGracefully();

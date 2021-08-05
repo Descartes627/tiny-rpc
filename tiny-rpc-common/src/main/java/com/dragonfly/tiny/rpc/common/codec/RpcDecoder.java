@@ -5,6 +5,7 @@ import com.dragonfly.tiny.rpc.common.util.SerializationUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @date: 2021/8/3 11:54 上午
  * @Description:
  */
+@Slf4j
 public class RpcDecoder extends ByteToMessageDecoder {
     private Class<?> genericClass;
 
@@ -34,6 +36,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
         byte[] data = new byte[dataLength];
         in.readBytes(data);
         Object o = SerializationUtil.deserialize(data, genericClass);
+        log.debug("decode finished " + o);
         out.add(o);
     }
 }
