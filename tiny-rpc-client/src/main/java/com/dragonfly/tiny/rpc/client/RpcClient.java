@@ -38,7 +38,8 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
     public void channelRead0(ChannelHandlerContext ctx, RpcResponse response) throws Exception {
         log.debug("RpcClient读到response " + response);
         this.response = response;
-        response.notifyAll();
+        ctx.close();
+//        response.notifyAll();
     }
 
     @Override
@@ -49,6 +50,7 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
 
     public RpcResponse send(RpcRequest request) throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
+        Channel channel = null;
         try {
             // 创建并初始化 Netty 客户端 Bootstrap 对象
             Bootstrap bootstrap = new Bootstrap();
@@ -67,7 +69,7 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
             // 连接 RPC 服务器
             ChannelFuture future = bootstrap.connect(host, port).sync();
             // 写入 RPC 请求数据并关闭连接
-            Channel channel = future.channel();
+            channel = future.channel();
             channel.writeAndFlush(request).sync().addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
@@ -79,6 +81,7 @@ public class RpcClient extends SimpleChannelInboundHandler<RpcResponse> {
             return response;
         } finally {
             group.shutdownGracefully();
+            channel.close();
         }
     }
 }

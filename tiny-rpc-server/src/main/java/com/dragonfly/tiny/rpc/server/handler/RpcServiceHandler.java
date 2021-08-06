@@ -62,7 +62,7 @@ public class RpcServiceHandler extends SimpleChannelInboundHandler<RpcRequest> {
             log.error("handle result failure", e);
             response.setException(e);
         }
-        ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.debug("create response for request " + request.getRequestId()));
+        ctx.writeAndFlush(response).addListener((ChannelFutureListener) channelFuture -> log.info("create response for request " + request.getRequestId()));
     }
 
     private Object handle(RpcRequest request) throws Exception {
